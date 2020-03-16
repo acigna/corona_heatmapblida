@@ -1,12 +1,12 @@
 var CoronaHeatMap = {
 	case_type: "Confirmed",
 
-	case_url: "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-{{CASE_TYPE}}.csv",
+	case_url: "https://docs.google.com/spreadsheets/u/3/d/1LD7Ej7ZeDU8U7MLEFmXN0E1p3W_sPI6hQKpmvpkXHfM/export?format=csv&id=1LD7Ej7ZeDU8U7MLEFmXN0E1p3W_sPI6hQKpmvpkXHfM&gid=0",
 
 	heatmap_config: {
   		// radius should be small ONLY if scaleRadius is true (or small radius is intended)
   		// if scaleRadius is false it will be the constant radius used in pixels
-  		"radius": 2,
+  		"radius": 0.3,
   		"maxOpacity": .8,
   		// scales the radius based on map zoom
   		"scaleRadius": true,
@@ -38,9 +38,9 @@ var CoronaHeatMap = {
 	},
 
 	buildMapWithTileLayer: function ( map_id ) {
-		var map = L.map( map_id ).setView([51.505, -0.09], 4);
+		var map = L.map( map_id ).setView([36, 2], 6);
 		this.map = map;
-		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png', {
     		attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 		}).addTo(map);
 		return map;
@@ -61,14 +61,14 @@ var CoronaHeatMap = {
 		});
 		this.json_data = json_data;
 		this.heatMapData = {
- 			max: 200,
+ 			max: 20,
   			data: json_data
 		};
 		return {column_data:column_data, json_data:json_data};
 	},
 
 	loadData: function () {
-		return $.get(this.case_url.replace('{{CASE_TYPE}}', this.case_type));
+		return $.get(this.case_url);
 	},
 
 	createHeatMap: function ( map ) {

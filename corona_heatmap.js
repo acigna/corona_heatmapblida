@@ -40,7 +40,7 @@ var CoronaHeatMap = {
 	buildMapWithTileLayer: function ( map_id ) {
 		var map = L.map( map_id ).setView([36, 2], 6);
 		this.map = map;
-		L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png', {
+		L.tileLayer('https://a.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}{r}.png', {
     		attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 		}).addTo(map);
 		return map;

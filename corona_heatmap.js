@@ -1,12 +1,12 @@
 var CoronaHeatMap = {
 	case_type: "Confirmed",
 
-	case_url: "https://docs.google.com/spreadsheets/u/3/d/1LD7Ej7ZeDU8U7MLEFmXN0E1p3W_sPI6hQKpmvpkXHfM/export?format=csv&id=1LD7Ej7ZeDU8U7MLEFmXN0E1p3W_sPI6hQKpmvpkXHfM&gid=0",
+	case_url: "https://docs.google.com/spreadsheets/u/1/d/1szckjHOF672MNVpH8uoE2Ev71h8ihyuUqowLlCfOQnY/export?format=csv&id=1szckjHOF672MNVpH8uoE2Ev71h8ihyuUqowLlCfOQnY&gid=0",
 
 	heatmap_config: {
   		// radius should be small ONLY if scaleRadius is true (or small radius is intended)
   		// if scaleRadius is false it will be the constant radius used in pixels
-  		"radius": 0.3,
+  		"radius": 0.007,
   		"maxOpacity": .8,
   		// scales the radius based on map zoom
   		"scaleRadius": true,
@@ -27,10 +27,13 @@ var CoronaHeatMap = {
 	},
 
 	updateHeatMap: function ( date ) {
-		var dateField = [date.getMonth() + 1,date.getDate(), date.getFullYear() - 2000].join('/');
+		var dateField = [("0" +(date.getMonth() + 1)).slice(-2), ("0" + date.getDate()).slice(-2), date.getFullYear() - 2000].join('/');
+		console.log( dateField );
 		this.json_data.forEach(function ( data_el ) {
+			console.log( data_el, data_el[dateField] );
 			data_el.case_number = data_el[dateField];
 		});
+		
 		this.heatmapLayer.cfg = this.heatmap_config;
 		this.heatmapLayer._heatmap.configure(this.heatmap_config);
 		this.heatmapLayer._reset(); 
@@ -38,7 +41,7 @@ var CoronaHeatMap = {
 	},
 
 	buildMapWithTileLayer: function ( map_id ) {
-		var map = L.map( map_id ).setView([36, 2], 6);
+		var map = L.map( map_id ).setView([36.482463, 2.8562737], 12);
 		this.map = map;
 		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     		attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -60,6 +63,7 @@ var CoronaHeatMap = {
 			return json_row;
 		});
 		this.json_data = json_data;
+		console.log( json_data );
 		this.heatMapData = {
  			max: 20,
   			data: json_data
@@ -83,6 +87,7 @@ var CoronaHeatMap = {
 	setUpDatesSelect: function ( date_select_id ) {
 		var selectEl = document.getElementById( date_select_id ),
 			self = this;
+
 		this.dates_columns.forEach(function ( date_column, index ) {
 			var optionEl = document.createElement('option');
 			optionEl.value = index;
@@ -98,10 +103,10 @@ var CoronaHeatMap = {
 	},
  
 	setUpDatesList: function ( column_data ) {
-		var dates_columns = column_data.slice(4).map(function ( date_column ) {
+		var dates_columns = column_data.slice(5).map(function ( date_column ) {
 			var date_array = date_column.split('/').map(Number);
 			return new Date( 2000 + date_array[2], date_array[0] - 1, date_array[1] );
-		});
+		});;
 		this.dates_columns = dates_columns;
 		return dates_columns;
 	},

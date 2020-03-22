@@ -6,14 +6,14 @@ var CoronaHeatMap = {
 	heatmap_config: {
   		// radius should be small ONLY if scaleRadius is true (or small radius is intended)
   		// if scaleRadius is false it will be the constant radius used in pixels
-  		"radius": 0.007,
-  		"maxOpacity": .8,
+  		"radius": 30,
+  		"maxOpacity": 1,
   		// scales the radius based on map zoom
-  		"scaleRadius": true,
+  		"scaleRadius": false,
   		// if set to false the heatmap uses the global maximum for colorization
   		// if activated: uses the data maximum within the current map boundaries
   		//   (there will always be a red spot with useLocalExtremas true)
-  		"useLocalExtrema": false,
+  		"useLocalExtrema": true,
   		// which field name in your data represents the latitude - default "lat"
   		latField: 'Lat',
   		// which field name in your data represents the longitude - default "lng"
@@ -41,7 +41,7 @@ var CoronaHeatMap = {
 	},
 
 	buildMapWithTileLayer: function ( map_id ) {
-		var map = L.map( map_id ).setView([36.482463, 2.8562737], 12);
+		var map = L.map( map_id ).setView([36.482463, 2.8562737], 11);
 		this.map = map;
 		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     		attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -63,9 +63,8 @@ var CoronaHeatMap = {
 			return json_row;
 		});
 		this.json_data = json_data;
-		console.log( json_data );
 		this.heatMapData = {
- 			max: 20,
+ 			max: 10,
   			data: json_data
 		};
 		return {column_data:column_data, json_data:json_data};
@@ -111,6 +110,13 @@ var CoronaHeatMap = {
 		return dates_columns;
 	},
 
+	setUpMarkers: function ( json_data, map ) {
+		json_data.forEach(function ( data_el ) {
+			L.marker([data_el.Lat, data_el.Long], {title:  data_el.district + "\nNombre de cas : " + data_el.case_number + "\nNote :" + data_el.Note}).addTo(map);	
+		});
+		
+	},
+
 	init: function ( map_id, date_select_id ) {
 		var self = this;
 		this.map_id = map_id;
@@ -123,6 +129,7 @@ var CoronaHeatMap = {
 			var dates_columns = self.setUpDatesList( structuredData.column_data );
 			self.setUpDatesSelect( date_select_id );
 			self.updateHeatMap( dates_columns[dates_columns.length - 1] );
+			self.setUpMarkers( self.json_data, map );
 		});
 	}
 }
